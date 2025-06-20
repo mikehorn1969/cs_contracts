@@ -1,0 +1,5 @@
+.venv
+.env
+*.xlsx
+colleague7.cfg
+launch.json
