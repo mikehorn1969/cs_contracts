@@ -4,11 +4,6 @@ import urllib.request, json
 import configparser
 import sys
 
-user_id = ""
-subscription_key = ""
-chservice_key = ""
-company_id = ""
-
 def loadConfig():
 
     # Read config
@@ -18,10 +13,13 @@ def loadConfig():
         # Get subscription key from config
         subscription_key = config.get('APIKEYS', 'SUBSCRIPTION_KEY1')    
         user_id = config.get('APIKEYS', 'C7_USERID')
+        ch_key = config.get('APIKEYS', 'CH_KEY')
 
-        return()
+        return(subscription_key, user_id, ch_key)
 
-def getCompany(CompanyName):
+def getCompany(company_id):
+
+    subscription_key, user_id = loadConfig()
 
     try:
 
@@ -37,8 +35,6 @@ def getCompany(CompanyName):
 
         req.get_method = lambda: 'GET'
         response = urllib.request.urlopen(req)
-        print(response.getcode())
-        print(response.read())
 
         # Read and decode response
         response_body = response.read().decode('utf-8')
@@ -61,20 +57,6 @@ def getCompany(CompanyName):
 
         return json.dumps(result)
 
-
     except Exception as e:
         print(e)
 
-if __name__ == "__main__":
-    
-    # Read CompanyId from command line or stdin
-
-    # Check if the CompanyId was passed
-    if len(sys.argv) < 2:
-        print("Usage: python sandpit.py <CompanyId>")
-        exit
-
-    loadConfig()
-  
-    company_id = sys.argv[1]
-    getCompany(company_id)
