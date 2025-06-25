@@ -17,9 +17,9 @@ def loadConfig():
 
         return(subscription_key, user_id, ch_key)
 
-def getCompany(company_id):
+def getC7Company(company_id):
 
-    subscription_key, user_id = loadConfig()
+    subscription_key, user_id, api_key = loadConfig()
 
     try:
 

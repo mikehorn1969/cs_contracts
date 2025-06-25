@@ -2,7 +2,7 @@
 
 import json
 import src
-from sandpit import loadConfig, getCompany
+from sandpit import loadConfig, getC7Company
 
 def test_loadConfig():
     
@@ -10,9 +10,9 @@ def test_loadConfig():
 
     assert(isinstance(result,tuple)), "loadConfig result should be tuple"
 
-def test_getCompany():
+def test_getC7Company():
     
-    company_data = getCompany("5076") # test with CS company number
+    company_data = getC7Company("5076") # test with CS company number
 
     company = json.loads(company_data)
 

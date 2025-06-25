@@ -11,17 +11,12 @@ def CHQuery(companyNo):
     if not api_key:
         raise ValueError("API key not found in config file.")
 
-    # url = f"https://api.company-information.service.gov.uk/company/{companyNo}"
     url = f"https://api.companieshouse.gov.uk/company/{companyNo}"
     
     auth_str = f"{api_key}:" 
     b64_auth_str = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")+':'
 
-    print(f"DBG: request: {url}")
-
     response = requests.get(url, auth = (f"{auth_str}",''))
-
-    print(f"DBG: response: {response}")
 
     if response.status_code == 200:
         return response.json()

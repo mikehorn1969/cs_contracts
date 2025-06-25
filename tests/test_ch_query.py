@@ -12,9 +12,6 @@ def test_CHQuery():
     try:
         company_data = CHQuery(companyNo)
 
-        print("here 2")
-        print(f"output from getCompany: {company_data}")
-
         print(json.dumps(company_data, indent=2))
     except Exception as e:
         print(f"Failed to get company info: {e}")
