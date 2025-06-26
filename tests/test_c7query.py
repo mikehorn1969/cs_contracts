@@ -2,7 +2,7 @@
 
 import json
 import src
-from sandpit import loadConfig, getC7Company
+from c7query import loadConfig, getC7Company
 
 def test_loadConfig():
     

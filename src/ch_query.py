@@ -2,7 +2,7 @@ import requests
 from requests.auth import HTTPBasicAuth
 import base64
 import json
-from sandpit import loadConfig
+from c7query import loadConfig
 
 def CHQuery(companyNo):
     """Get company info by company number using requests library."""
