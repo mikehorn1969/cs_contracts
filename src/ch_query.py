@@ -1,6 +1,5 @@
 import requests
 from requests.auth import HTTPBasicAuth
-import base64
 import json
 from c7query import loadConfig
 
@@ -14,8 +13,7 @@ def CHQuery(companyNo):
     url = f"https://api.companieshouse.gov.uk/company/{companyNo}"
     
     auth_str = f"{api_key}:" 
-    b64_auth_str = base64.b64encode(auth_str.encode("utf-8")).decode("utf-8")+':'
-
+  
     response = requests.get(url, auth = (f"{auth_str}",''))
 
     if response.status_code == 200:

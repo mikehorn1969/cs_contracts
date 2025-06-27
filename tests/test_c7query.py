@@ -2,7 +2,7 @@
 
 import json
 import src
-from c7query import loadConfig, getC7Company
+from c7query import loadConfig, getC7Company, getC7Contact
 
 def test_loadConfig():
     
@@ -23,12 +23,30 @@ def test_getC7Company():
 
     # Optional: assertion for testing purposes
     assert isinstance(company, dict), "Result should be a dictionary"
-    assert "CompanyName" in company_data, "Expected key 'CompanyName' not found" 
+    assert "ClientName" in company_data, "Expected key 'ClientName' not found" 
+    assert "Jurisdiction" in company_data, "Expected key 'Jurisdiction' not found" 
+    assert "ClientCompanyNo" in company_data, "Expected key 'ClientCompanyNo' not found" 
+    assert "ClientAddress" in company_data, "Expected key 'ClientAddress' not found" 
 
 
-"""
-ClientName
 
-ClientCompanyNo
-ClientAddress
-"""
+def test_getC7Contact():
+    
+    contact_data = getC7Contact("5306") # test with CS company number
+
+    contact = json.loads(contact_data)
+
+    # Print each key-value pair
+    print("Output of getC7Contact():")
+    for key, value in contact.items():
+        print(f"{key}: {value}")
+
+    assert isinstance(contact, dict), "Result should be a dictionary"
+
+    assert "ContactName" in contact_data, "Expected key 'ContactName' not found" 
+    assert "ContactEmail" in contact_data, "Expected key 'ContactEmail' not found"
+    assert "ContactPhone" in contact_data, "Expected key 'ContactPhone' not found"
+    assert "ContactAddress" in contact_data, "Expected key 'ContactAddress' not found"
+    assert "ContactTitle"  in contact_data, "Expected key 'ContactTitle' not found"
+
+    
