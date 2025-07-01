@@ -1,8 +1,10 @@
-# sandpit.py
+# c7query.py
 
 import urllib.request, json
+import requests
 import configparser
-import sys
+#import sys
+from classes import Company, Contact
 
 def loadConfig():
 
@@ -55,7 +57,7 @@ def getC7Company(company_id):
             "Postcode": response_json.get("Postcode"),
         }
 
-        return json.dumps(result)
+        return response.status_code
 
     except Exception as e:
         print(e)
@@ -67,7 +69,7 @@ def getC7Contact(contact_id):
 
     try:
 
-        url = f"https://coll7openapi.azure-api.net/api/Contact/Get?UserId={user_id}&CompanyId={contact_id}&IncludeArchivedRecords=false"
+        url = f"https://coll7openapi.azure-api.net/api/Contact/Get?UserId={user_id}&ContactId={contact_id}&IncludeArchivedRecords=false"
 
         hdr ={
         # Request headers
@@ -87,15 +89,79 @@ def getC7Contact(contact_id):
         response_json = json.loads(response_body)
 
        # Extract desired fields
+       # companyname, name, address, emailaddress, phone, title
         result = {
-            "ContactName": response_json.get("Forenames") + " " + response_json.get("Surname"),
-            "ContactEmail": response_json.get("EmailAddress"),
-            "ContactPhone": response.json.get("TelephoneNumber"),           
-            "ContactAddress": response_json.get("AddressLine1") + " " + response_json.get("AddressLine2") + " " + response_json.get("AddressLine3") + " " +response_json.get("City") + " " + response_json.get("Postcode"),
-            "ContactTitle": response_json.get("Title")
-        }
+            "CompanyName": (response_json.get("CompanyName")),
+            "ContactName": (response_json.get("Forenames") or "") + " " + (response_json.get("Surname") or ""),            
+            "ContactAddress": (
+                (response_json.get("AddressLine1") or "") + " " +
+                (response_json.get("AddressLine2") or "") + " " +
+                (response_json.get("AddressLine3") or "") + " " +
+                (response_json.get("City") or "") + " " +
+                (response_json.get("Postcode") or "")
+            ).strip(),
+            "ContactEmail": response_json.get("EmailAddress") or "",
+            "ContactPhone": response_json.get("TelephoneNumber") or "",
+            "ContactTitle": response_json.get("Title") or ""
+            }
 
-        return json.dumps(result)
+        return response.status_code
 
     except Exception as e:
         print(e)
+
+
+def getC7Contacts():
+     
+    subscription_key, user_id, api_key = loadConfig()
+
+    #try:       
+    url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
+
+    hdr ={
+    # Request headers
+    'Cache-Control': 'no-cache',
+    'Ocp-Apim-Subscription-Key': subscription_key,
+    }
+    body ={
+        "userId": user_id,
+        "allColumns": False,
+        "columns": ["ContactId", "CompanyName", "Forenames", "Surname", "AddressLine1", "AddressLine2", "AddressLine3", 
+                    "City", "Postcode", "EmailAddress", "TelephoneNumber", "Title"],
+        "includeArchived": False,
+        "parameters": [{
+            "fieldName": "DateCreated",
+            "fieldValue": "1 Jan 2010" 
+        }]
+    }
+
+    response = requests.post(url, headers=hdr , json=body)
+
+    # Read and decode response
+    response_json = response.json()
+
+    # Parse JSON
+    # response_json = json.loads(response_body)
+
+    # Extract desired fields
+    # companyname, name, address, emailaddress, phone, title
+    
+    for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
+
+        idx = Contact.counter + 1
+        ContactName = f"{Forenames} {Surname}"
+        ContactAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
+            
+        new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+
+    # return json.dumps(result)
+    return response.status_code
+
+    #except Exception as e:
+    #    print(e)
+
+
+if __name__ == '__main__':
+    getC7Contacts()    
+
+    print(f"Contact count: {Contact.counter}")

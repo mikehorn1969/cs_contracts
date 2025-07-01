@@ -1,8 +1,8 @@
 # test_sandpit.py
 
 import json
-import src
-from c7query import loadConfig, getC7Company, getC7Contact
+from c7query import loadConfig, getC7Company, getC7Contact, getC7Contacts
+from classes import Company, Contact
 
 def test_loadConfig():
     
@@ -49,4 +49,16 @@ def test_getC7Contact():
     assert "ContactAddress" in contact_data, "Expected key 'ContactAddress' not found"
     assert "ContactTitle"  in contact_data, "Expected key 'ContactTitle' not found"
 
+
+def test_getC7Contacts():
+
+    result = getC7Contacts()
+
+    print(f"Contact count: {Contact.counter}")
+    print(f"Result: {result}")
     
+    assert result == 200, "Failed to load contacts"
+
+
+if __name__ == '__main__':
+    test_getC7Contacts()
