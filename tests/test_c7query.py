@@ -1,7 +1,7 @@
-# test_sandpit.py
+# test_c7query.py
 
 import json
-from c7query import loadConfig, getC7Company, getC7Contact, getC7Contacts
+from c7query import loadConfig, getC7Company, getC7Contact, getC7Contacts, getC7Companies
 from classes import Company, Contact
 
 def test_loadConfig():
@@ -10,38 +10,31 @@ def test_loadConfig():
 
     assert(isinstance(result,tuple)), "loadConfig result should be tuple"
 
+
 def test_getC7Company():
     
-    company_data = getC7Company("5076") # test with CS company number
+    company_id = 915
 
-    company = json.loads(company_data)
-
-    # Print each key-value pair
-    print("Output of getCompany():")
-    for key, value in company.items():
-        print(f"{key}: {value}")
+    company_data = getC7Company(company_id) # test with CS company number
 
     # Optional: assertion for testing purposes
-    assert isinstance(company, dict), "Result should be a dictionary"
-    assert "ClientName" in company_data, "Expected key 'ClientName' not found" 
-    assert "Jurisdiction" in company_data, "Expected key 'Jurisdiction' not found" 
-    assert "ClientCompanyNo" in company_data, "Expected key 'ClientCompanyNo' not found" 
-    assert "ClientAddress" in company_data, "Expected key 'ClientAddress' not found" 
-
+    assert isinstance(company_data, dict), "Result should be a dictionary"
+    assert "CompanyName" in company_data, "Expected key 'CompanyNamentName' not found" 
+    assert "CompanyAddress" in company_data, "Expected key 'CompanyAddress' not found" 
 
 
 def test_getC7Contact():
     
-    contact_data = getC7Contact("5306") # test with CS company number
+    contact_id = 5306
 
-    contact = json.loads(contact_data)
+    contact_data = getC7Contact(contact_id) # test with CS company number
 
     # Print each key-value pair
     print("Output of getC7Contact():")
-    for key, value in contact.items():
+    for key, value in contact_data.items():
         print(f"{key}: {value}")
 
-    assert isinstance(contact, dict), "Result should be a dictionary"
+    assert isinstance(contact_data, dict), "Result should be a dictionary"
 
     assert "ContactName" in contact_data, "Expected key 'ContactName' not found" 
     assert "ContactEmail" in contact_data, "Expected key 'ContactEmail' not found"
@@ -59,6 +52,17 @@ def test_getC7Contacts():
     
     assert result == 200, "Failed to load contacts"
 
+def test_getC7Companies():
+
+    result = getC7Companies()
+
+    print(f"Contact count: {Contact.counter}")
+    print(f"Result: {result}")
+    
+    assert isinstance(result, classmethod), "No companies found"
+    assert result == 200, "Failed to load contacts"
+
 
 if __name__ == '__main__':
-    test_getC7Contacts()
+    test_getC7Contact()
+        

@@ -4,12 +4,16 @@
 class Company:
 
     counter = 0
+    _instances = []
 
-    def __init__(self, id, name, address  ):
-        self.id = id
-        self.name = name
+    def __init__(self, companyname, address, email, phone, companyNumber  ):
+        self.company_name = companyname
         self.address = address
+        self.emailaddress = email
+        self.phone = phone
+        self.companyNumber = companyNumber
         Company.counter += 1 # increment the company counter
+        Company._instances.append(self) # track instance
 
     @classmethod
     def count(cls):
@@ -30,6 +34,7 @@ class Company:
 class Contact:
 
     counter = 0
+    _instsances = []
 
     def __init__(self, companyname, name, address, emailaddress, phone, title  ):        
         self.company_name = companyname

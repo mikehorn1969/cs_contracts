@@ -1,10 +1,10 @@
-# c7query.py
+# c7query.py - Colleague 7 API queries
 
-import urllib.request, json
+import json
 import requests
 import configparser
-#import sys
 from classes import Company, Contact
+import re
 
 def loadConfig():
 
@@ -33,31 +33,22 @@ def getC7Company(company_id):
         'Ocp-Apim-Subscription-Key': subscription_key,
         }
 
-        req = urllib.request.Request(url, headers=hdr)
-
-        req.get_method = lambda: 'GET'
-        response = urllib.request.urlopen(req)
-
-        # Read and decode response
-        response_body = response.read().decode('utf-8')
+        response = requests.get(url, headers=hdr)
 
         # Parse JSON
-        response_json = json.loads(response_body)
+        response_json = response.json()
+        
+        # Extract desired fields
+        # companyname, address
+        RawAddress = (response_json.get("AddressLine1") or "") + ", " + (response_json.get("AddressLine2") or "") + ", " + (response_json.get("AddressLine3") or "") + ", " + (response_json.get("City") or "") + ", " + (response_json.get("Postcode") or "")
+        CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
 
-       # Extract desired fields
         result = {
             "CompanyName": response_json.get("CompanyName"),
-            "AddressId": response_json.get("AddressId"),
-            "AddressLine1": response_json.get("AddressLine1"),
-            "AddressLine2": response_json.get("AddressLine2"),
-            "AddressLine3": response_json.get("AddressLine3"),
-            "City": response_json.get("City"),
-            "County": response_json.get("County"),
-            "Country": response_json.get("Country"),
-            "Postcode": response_json.get("Postcode"),
+            "CompanyAddress": CompanyAddress
         }
 
-        return response.status_code
+        return result
 
     except Exception as e:
         print(e)
@@ -77,35 +68,28 @@ def getC7Contact(contact_id):
         'Ocp-Apim-Subscription-Key': subscription_key,
         }
 
-        req = urllib.request.Request(url, headers=hdr)
-
-        req.get_method = lambda: 'GET'
-        response = urllib.request.urlopen(req)
-
-        # Read and decode response
-        response_body = response.read().decode('utf-8')
+        response = requests.get(url, headers=hdr)
 
         # Parse JSON
-        response_json = json.loads(response_body)
+        response_json = response.json()
 
-       # Extract desired fields
-       # companyname, name, address, emailaddress, phone, title
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title
+
+        ContactName = (response_json.get("forenames") or "") + " " + (response_json.get("surname") or "")
+        RawAddress = (response_json.get("AddressLine1") or "") + ", " + (response_json.get("AddressLine2") or "") + ", " + (response_json.get("AddressLine3") or "") + ", " + (response_json.get("City") or "") + ", " + (response_json.get("Postcode") or "")
+        ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+
         result = {
             "CompanyName": (response_json.get("CompanyName")),
-            "ContactName": (response_json.get("Forenames") or "") + " " + (response_json.get("Surname") or ""),            
-            "ContactAddress": (
-                (response_json.get("AddressLine1") or "") + " " +
-                (response_json.get("AddressLine2") or "") + " " +
-                (response_json.get("AddressLine3") or "") + " " +
-                (response_json.get("City") or "") + " " +
-                (response_json.get("Postcode") or "")
-            ).strip(),
+            "ContactName": ContactName,
+            "ContactAddress": ContactAddress,
             "ContactEmail": response_json.get("EmailAddress") or "",
             "ContactPhone": response_json.get("TelephoneNumber") or "",
             "ContactTitle": response_json.get("Title") or ""
             }
 
-        return response.status_code
+        return result
 
     except Exception as e:
         print(e)
@@ -115,53 +99,91 @@ def getC7Contacts():
      
     subscription_key, user_id, api_key = loadConfig()
 
-    #try:       
-    url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
 
-    hdr ={
-    # Request headers
-    'Cache-Control': 'no-cache',
-    'Ocp-Apim-Subscription-Key': subscription_key,
-    }
-    body ={
-        "userId": user_id,
-        "allColumns": False,
-        "columns": ["ContactId", "CompanyName", "Forenames", "Surname", "AddressLine1", "AddressLine2", "AddressLine3", 
-                    "City", "Postcode", "EmailAddress", "TelephoneNumber", "Title"],
-        "includeArchived": False,
-        "parameters": [{
-            "fieldName": "DateCreated",
-            "fieldValue": "1 Jan 2010" 
-        }]
-    }
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        body ={
+            "userId": user_id,
+            "allColumns": False,
+            "columns": ["ContactId", "CompanyName", "Forenames", "Surname", "AddressLine1", "AddressLine2", "AddressLine3", 
+                        "City", "Postcode", "EmailAddress", "TelephoneNumber", "Title"],
+            "includeArchived": False,
+            "parameters": [{
+                "fieldName": "DateCreated",
+                "fieldValue": "1 Jan 2010" 
+            }]
+        }
 
-    response = requests.post(url, headers=hdr , json=body)
+        response = requests.post(url, headers=hdr , json=body)
 
-    # Read and decode response
-    response_json = response.json()
+        # Read and decode response
+        response_json = response.json()
 
-    # Parse JSON
-    # response_json = json.loads(response_body)
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title    
+        for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
 
-    # Extract desired fields
-    # companyname, name, address, emailaddress, phone, title
+            ContactName = f"{Forenames} {Surname}"
+            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
+            ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+            new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+
+        # return json.dumps(result)
+        return response.status_code
+
+    except Exception as e:
+        return e
     
-    for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
+def getC7Companies():
+    
+    subscription_key, user_id, api_key = loadConfig()
 
-        idx = Contact.counter + 1
-        ContactName = f"{Forenames} {Surname}"
-        ContactAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
-            
-        new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Company/AdvancedSearch"
 
-    # return json.dumps(result)
-    return response.status_code
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        body ={
+            "userId": user_id,
+            "allColumns": False,
+            "columns": ["CompanyId", "CompanyName", "AddressLine1", "AddressLine2", "AddressLine3", 
+                        "City", "Postcode", "telephoneNumber", "companyEmail", "registrationNumber"],
+            "includeArchived": False,
+            "parameters": [{
+                "fieldName": "DateCreated",
+                "fieldValue": "1 Jan 2010" 
+            }]
+        }
 
-    #except Exception as e:
-    #    print(e)
+        response = requests.post(url, headers=hdr , json=body)
+
+        # Read and decode response
+        response_json = response.json()
+
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title    
+        for CompanyId, CompanyName, AddressLine1, AddressLine2, Addressline3, City, Postcode, companyEmail, TelephoneNumber, registrationNumber in response_json:
+
+            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
+            CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+                
+            # create a new Company instance
+            new_contact = Company({CompanyName}, CompanyAddress, {companyEmail}, {TelephoneNumber}, {registrationNumber})
+
+
+        return response.status_code
+
+    except Exception as e:
+        return e
 
 
 if __name__ == '__main__':
-    getC7Contacts()    
-
-    print(f"Contact count: {Contact.counter}")
+    getC7Companies()    

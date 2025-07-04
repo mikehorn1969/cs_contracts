@@ -1,0 +1,515 @@
+{
+    "type": "object",
+    "properties": {
+        "entityType": {
+            "type": "string"
+        },
+        "companyId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "dT_RowId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "companyName": {
+            "type": "string"
+        },
+        "industryCode": {
+            "type": "string"
+        },
+        "industryCodeLookups": {
+            "type": "string"
+        },
+        "employeeCount": {
+            "type": "string"
+        },
+        "parentCompanyId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "parentCompany": {
+            "type": "string"
+        },
+        "webAddress": {
+            "type": "string"
+        },
+        "companyEmail": {
+            "type": "string"
+        },
+        "referenceChecked": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "referenceCheckedBy": {
+            "type": "string"
+        },
+        "dateReferenceChecked": {
+            "type": "string"
+        },
+        "liveRequirements": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "forwardInterviews": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "totalNumberofPlacements": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "turnover": {
+            "type": "string"
+        },
+        "taxCodeDescription": {
+            "type": "string"
+        },
+        "paymentTerms": {
+            "type": "string"
+        },
+        "allowSelfBilling": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "timesheetMethod": {
+            "type": "string"
+        },
+        "nextInvoiceId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "invoiceIdPrefix": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "purchaseOrderCheckValue": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "defaultTimesheetStatus": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "companyType": {
+            "type": "string"
+        },
+        "fullContactXML": {
+            "type": "string"
+        },
+        "fullContactXMLLastUpdatedDate": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "invoiceCompany": {
+            "type": "string"
+        },
+        "invoiceCompanyId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "additionalInvoiceContacts": {
+            "type": "string"
+        },
+        "additionalInvoiceContactsList": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "type": "string"
+            },
+            "readOnly": true
+        },
+        "registrationNumber": {
+            "type": "string"
+        },
+        "vatNumber": {
+            "type": "string"
+        },
+        "accountReference": {
+            "type": "string"
+        },
+        "taxCode": {
+            "type": "string"
+        },
+        "invoiceAddressId": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "invoiceContact": {
+            "type": "string"
+        },
+        "invoiceContactId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "invoiceMethod": {
+            "type": "string"
+        },
+        "invoiceFrequency": {
+            "type": "string"
+        },
+        "paymentFrequency": {
+            "type": "string"
+        },
+        "marginOnly": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "invoicePeriod": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "skills": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "internalSkills": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "payeCalculatorOption": {
+            "type": "string"
+        },
+        "entityTypeInt": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "entityDescription": {
+            "type": "string"
+        },
+        "searchName": {
+            "type": "string"
+        },
+        "copySMLinks": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "copyConsentToNew": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "copyOwnershipToNew": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "newEntityGUID": {
+            "type": "string"
+        },
+        "forenames": {
+            "type": "string"
+        },
+        "surname": {
+            "type": "string"
+        },
+        "directNumber": {
+            "type": "string"
+        },
+        "directFax": {
+            "type": "string"
+        },
+        "mobileNumber": {
+            "type": "string"
+        },
+        "otherNumber": {
+            "type": "string"
+        },
+        "cleanDirectNumber": {
+            "type": "string"
+        },
+        "cleanDirectFax": {
+            "type": "string"
+        },
+        "cleanMobileNumber": {
+            "type": "string"
+        },
+        "cleanOtherNumber": {
+            "type": "string"
+        },
+        "formattedMobileNumber": {
+            "type": "string"
+        },
+        "companyWebsiteAddress": {
+            "type": "string"
+        },
+        "dateCreated": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "createdBy": {
+            "type": "string"
+        },
+        "createdByDescription": {
+            "type": "string"
+        },
+        "dateAmended": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "amendedBy": {
+            "type": "string"
+        },
+        "amendedByDescription": {
+            "type": "string"
+        },
+        "archivedDate": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "archivedBy": {
+            "type": "string"
+        },
+        "archivedByUsername": {
+            "type": "string"
+        },
+        "ownerId": {
+            "type": "string"
+        },
+        "dateOwned": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "lastContacted": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "lastContactedBy": {
+            "type": "string"
+        },
+        "authorisationLevel": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "alertText": {
+            "type": "string"
+        },
+        "defaultAlertText": {
+            "type": "string"
+        },
+        "defaultAlertTextBackground": {
+            "type": "string"
+        },
+        "defaultAlertTextColour": {
+            "type": "string"
+        },
+        "mailshotStatus": {
+            "type": "string"
+        },
+        "mailshotExpiry": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "noteId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "currencyCode": {
+            "type": "string"
+        },
+        "currencyDescription": {
+            "type": "string"
+        },
+        "renewalPeriod": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "emailAddress": {
+            "type": "string"
+        },
+        "twitterName": {
+            "type": "string"
+        },
+        "cdoMailItem": {
+            "$ref": "#/definitions/ColleagueInterface.Models.Utility.CDOMailItem"
+        },
+        "addressType": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "addressTypeDescription": {
+            "type": "string"
+        },
+        "addressId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "fullAddress": {
+            "type": "string",
+            "readOnly": true
+        },
+        "addressLink": {
+            "type": "string"
+        },
+        "addressLine1": {
+            "type": "string"
+        },
+        "addressLine2": {
+            "type": "string"
+        },
+        "addressLine3": {
+            "type": "string"
+        },
+        "city": {
+            "type": "string"
+        },
+        "county": {
+            "type": "string"
+        },
+        "postcode": {
+            "type": "string"
+        },
+        "country": {
+            "type": "string"
+        },
+        "countryDescription": {
+            "type": "string"
+        },
+        "telephoneNumber": {
+            "type": "string"
+        },
+        "faxNumber": {
+            "type": "string"
+        },
+        "addressDateCreated": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "addressCreatedBy": {
+            "type": "string"
+        },
+        "addressDateAmended": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "addressAmendedBy": {
+            "type": "string"
+        },
+        "primaryFlag": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "addressDesc": {
+            "type": "string"
+        },
+        "postcodePrefix": {
+            "type": "string"
+        },
+        "invoiceAddress": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "addressTaxCode": {
+            "type": "string"
+        },
+        "creditLimit": {
+            "type": "string"
+        },
+        "insuredCreditLimit": {
+            "type": "string"
+        },
+        "searchId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "searchResultEntityId": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "dateAdded": {
+            "format": "date-time",
+            "type": "string"
+        },
+        "searchResultDateAdded": {
+            "format": "date-time",
+            "type": "string",
+            "readOnly": true
+        },
+        "searchResultHidden": {
+            "type": "boolean"
+        },
+        "searchResultMark": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "found": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "searchResultSelected": {
+            "format": "int32",
+            "type": "integer"
+        },
+        "rank": {
+            "format": "int64",
+            "type": "integer"
+        },
+        "history": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ColleagueInterface.Models.Utility.History"
+            }
+        },
+        "notes": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ColleagueInterface.Models.Utility.Note"
+            }
+        },
+        "documents": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ColleagueInterface.Models.Utility.Document"
+            }
+        },
+        "recordList": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/ColleagueInterface.Models.Entities.BasicRecord"
+            }
+        },
+        "tabData": {
+            "uniqueItems": false,
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/System.Tuple`3[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]"
+            }
+        },
+        "defaultTab": {
+            "type": "string"
+        },
+        "alertBarHtml": {
+            "$ref": "#/definitions/System.Web.Mvc.MvcHtmlString"
+        },
+        "customFieldsJson": {
+            "type": "string"
+        },
+        "socialMediaFieldsJson": {
+            "type": "string"
+        },
+        "insertEntityNotesJson": {
+            "type": "string"
+        },
+        "insertEntitySkillsJson": {
+            "type": "string"
+        },
+        "hasProfilePictureData": {
+            "type": "boolean",
+            "readOnly": true
+        },
+        "profilePicture_Filename": {
+            "type": "string"
+        },
+        "profilePicture_ContentType": {
+            "type": "string"
+        },
+        "profilePicture_B64String": {
+            "type": "string"
+        }
+    },
+    "additionalProperties": {
+        "type": "object"
+    }
+}
