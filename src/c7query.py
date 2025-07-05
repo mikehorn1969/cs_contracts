@@ -120,17 +120,26 @@ def getC7Contacts():
         }
 
         response = requests.post(url, headers=hdr , json=body)
-
-        # Read and decode response
         response_json = response.json()
 
-        # Extract desired fields
-        # companyname, name, address, emailaddress, phone, title    
         contacts = []
-        for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
+        for item in response_json:
+            ContactId = item.get("ContactId", "")
+            CompanyName = item.get("CompanyName", "")
+            Forenames = item.get("Forenames", "")
+            Surname = item.get("Surname", "")
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            Addressline3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            Postcode = item.get("Postcode", "")
+            EmailAddress = item.get("EmailAddress", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+            Title = item.get("Title", "")
 
-            ContactName = f"{Forenames} {Surname}"
-            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
+            ContactName = (Forenames or "") + (Surname  or "")
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+            
             ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
             new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
 
@@ -181,21 +190,32 @@ def getC7Companies():
         # Extract desired fields
         # companyname, name, address, emailaddress, phone, title    
         companies = []
-        for CompanyId, CompanyName, AddressLine1, AddressLine2, Addressline3, City, Postcode, companyEmail, TelephoneNumber, registrationNumber in response_json:
+        for item in response_json:
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            AddressLine3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            CompanyEmail = item.get("CompanyEmail", "")
+            CompanyId = item.get("CompanyId", "")
+            CompanyName = item.get("CompanyName", "")
+            Postcode = item.get("Postcode", "")
+            RegistrationNumber = item.get("RegistrationNumber", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+        
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
 
-            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
             CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
                 
             # create a new Company instance
-            new_contact = Company({CompanyName}, CompanyAddress, {companyEmail}, {TelephoneNumber}, {registrationNumber})
+            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
 
             companies.append({
                 "CompanyId": CompanyId,
                 "CompanyName": CompanyName,
                 "CompanyAddress": CompanyAddress,
-                "CompanyEmail": companyEmail,
+                "CompanyEmail": CompanyEmail,
                 "CompanyPhone": TelephoneNumber,
-                "CompanyNumber": registrationNumber
+                "CompanyNumber": RegistrationNumber
             })
 
         return companies
