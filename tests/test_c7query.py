@@ -52,17 +52,17 @@ def test_getC7Contacts():
     
     assert result == 200, "Failed to load contacts"
 
+
 def test_getC7Companies():
 
     result = getC7Companies()
 
-    print(f"Contact count: {Contact.counter}")
+    print(f"Company count: {Company.counter}")
     print(f"Result: {result}")
     
-    assert isinstance(result, classmethod), "No companies found"
     assert result == 200, "Failed to load contacts"
 
 
 if __name__ == '__main__':
-    test_getC7Contact()
+    test_getC7Companies()
         

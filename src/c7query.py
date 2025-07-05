@@ -126,6 +126,7 @@ def getC7Contacts():
 
         # Extract desired fields
         # companyname, name, address, emailaddress, phone, title    
+        contacts = []
         for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
 
             ContactName = f"{Forenames} {Surname}"
@@ -133,8 +134,17 @@ def getC7Contacts():
             ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
             new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
 
-        # return json.dumps(result)
-        return response.status_code
+            contacts.append({
+                "ContactId": ContactId,
+                "CompanyName": CompanyName,
+                "ContactName": ContactName,
+                "ContactAddress": ContactAddress,
+                "ContactEmail": EmailAddress,
+                "ContactPhone": TelephoneNumber,
+                "ContactTitle": Title
+            })
+
+        return contacts
 
     except Exception as e:
         return e
@@ -170,6 +180,7 @@ def getC7Companies():
 
         # Extract desired fields
         # companyname, name, address, emailaddress, phone, title    
+        companies = []
         for CompanyId, CompanyName, AddressLine1, AddressLine2, Addressline3, City, Postcode, companyEmail, TelephoneNumber, registrationNumber in response_json:
 
             RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
@@ -178,8 +189,16 @@ def getC7Companies():
             # create a new Company instance
             new_contact = Company({CompanyName}, CompanyAddress, {companyEmail}, {TelephoneNumber}, {registrationNumber})
 
+            companies.append({
+                "CompanyId": CompanyId,
+                "CompanyName": CompanyName,
+                "CompanyAddress": CompanyAddress,
+                "CompanyEmail": companyEmail,
+                "CompanyPhone": TelephoneNumber,
+                "CompanyNumber": registrationNumber
+            })
 
-        return response.status_code
+        return companies
 
     except Exception as e:
         return e

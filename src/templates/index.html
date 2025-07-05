@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Change Specialists - Contract Management</title>
+    <script>
+    async function loadCompanies() {
+        let response = await fetch('/api/companies');
+        let companies = await response.json();
+        let companySelect = document.getElementById('company');
+        companies.forEach(c => {
+            let option = document.createElement('option');
+            option.value = c.CompanyId || c.companyNumber || c.companyNumber; // Adjust as needed
+            option.text = c.CompanyName || c.company_name;
+            companySelect.appendChild(option);
+        });
+    }
+
+    async function loadContacts() {
+        let response = await fetch('/api/contacts');
+        let contacts = await response.json();
+        let contactSelect = document.getElementById('contact');
+        contacts.forEach(c => {
+            let option = document.createElement('option');
+            option.value = c.ContactId || c.name;
+            option.text = c.ContactName || c.name;
+            contactSelect.appendChild(option);
+        });
+    }
+
+    window.onload = function() {
+        loadCompanies();
+        loadContacts();
+    };
+    </script>
+</head>
+<body>
+    <h1>Company & Contact Picker</h1>
+    <label for="company">Company:</label>
+    <select id="company"></select>
+
+    <br><br>
+
+    <label for="contact">Contact:</label>
+    <select id="contact"></select>
+</body>
+</html>
