@@ -4,3 +4,4 @@
 *.docx
 colleague7.cfg
 launch.json
+**/pycache
