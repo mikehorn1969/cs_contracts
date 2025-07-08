@@ -3,7 +3,7 @@
 import json
 import requests
 import configparser
-from classes import Company, Contact, Config
+from classes import Company, Contact, Config, Requirement
 import re
 
 def loadConfig():
@@ -156,19 +156,6 @@ def getC7Contacts():
             EmailAddress = item.get("EmailAddress", "")
             TelephoneNumber = item.get("TelephoneNumber", "")
             Title = item.get("Title", "")
-        for item in response_json:
-            ContactId = item.get("ContactId", "")
-            CompanyName = item.get("CompanyName", "")
-            Forenames = item.get("Forenames", "")
-            Surname = item.get("Surname", "")
-            AddressLine1 = item.get("AddressLine1", "")
-            AddressLine2 = item.get("AddressLine2", "")
-            Addressline3 = item.get("AddressLine3", "")
-            City = item.get("City", "")
-            Postcode = item.get("Postcode", "")
-            EmailAddress = item.get("EmailAddress", "")
-            TelephoneNumber = item.get("TelephoneNumber", "")
-            Title = item.get("Title", "")
 
             ContactName = (Forenames or "") + " " + (Surname  or "")
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
@@ -240,25 +227,9 @@ def getC7Companies():
             TelephoneNumber = item.get("TelephoneNumber", "")
         
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
-
-        for item in response_json:
-            AddressLine1 = item.get("AddressLine1", "")
-            AddressLine2 = item.get("AddressLine2", "")
-            AddressLine3 = item.get("AddressLine3", "")
-            City = item.get("City", "")
-            CompanyEmail = item.get("CompanyEmail", "")
-            CompanyId = item.get("CompanyId", "")
-            CompanyName = item.get("CompanyName", "")
-            Postcode = item.get("Postcode", "")
-            RegistrationNumber = item.get("RegistrationNumber", "")
-            TelephoneNumber = item.get("TelephoneNumber", "")
-        
-            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
-
             CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
                 
             # create a new Company instance
-            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
             new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
 
             companies.append({
@@ -268,7 +239,6 @@ def getC7Companies():
                 "CompanyEmail": CompanyEmail,
                 "CompanyEmail": CompanyEmail,
                 "CompanyPhone": TelephoneNumber,
-                "CompanyNumber": RegistrationNumber
                 "CompanyNumber": RegistrationNumber
             })
 
@@ -485,8 +455,51 @@ def getContactsByCompany(CompanyName):
     except Exception as e:
         return e
 
+def getC7Requirements(company_name,contact_name,status):
+
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
+
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Requirement/Search?UserId={user_id}&Status={status}&CompanyName={company_name}&ContactName={contact_name}"
+
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        
+        response = requests.get(url, headers=hdr)
+        response_json = response.json()
+
+        requirements = []
+        for item in response_json:
+            CompanyName = item.get("companyName", "")
+            ContactName = item.get("contactName", "")
+            Description = item.get("entityDescription", "")
+            
+
+            new_requirement = Requirement(CompanyName, ContactName, Description)
+
+            requirements.append({
+                "CompanyName": CompanyName,
+                "ContactName": ContactName,
+                "Description": Description
+            })
+
+        return requirements
+
+    except Exception as e:
+        return e
+
 
 if __name__ == '__main__':
-    loadConfig()    
-    for search_config in Config._instances:
-        print(f"{search_config.key}, {search_config.value}")
+    returnval = getC7Companies()
+
+    for company in returnval:
+        print(company.get("CompanyName"))
+
+    

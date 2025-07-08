@@ -45,6 +45,9 @@ class Company:
                 return search_company
         return None
     
+    @classmethod
+    def get_all_companies(cls):
+        return cls._instances
 
 class Contact:
 
@@ -88,3 +91,44 @@ class Contact:
             return None    
         else:
             return contacts
+
+
+class Requirement:
+
+    counter = 0
+    _instances = []
+
+    def __init__(self, companyname, contactname, description ):        
+        self.companyname = companyname
+        self.contactname = contactname
+        self.description = description
+        
+        Requirement.counter += 1 # increment the company counter
+        Requirement._instances.append(self)
+
+    @classmethod
+    def count(cls):
+        print(f"Requirement count: {cls.counter}")
+
+    @classmethod
+    def get_all_contacts(cls):
+        return cls._instances
+    
+    @classmethod
+    def find_by_name(cls, search_name):
+        for search_contact in cls._instances:
+            if search_contact.name == search_name:
+                return search_contact
+        return None    
+    
+    @classmethod
+    def find_by_company(cls, search_company):
+        requirements = []
+        for search_contact in cls._instances:
+            if search_contact.company_name == search_company:
+                requirements.append(search_contact)
+        
+        if requirements is None:
+            return None    
+        else:
+            return requirements

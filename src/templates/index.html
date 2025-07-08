@@ -9,7 +9,7 @@
         let companySelect = document.getElementById('company');
         companies.forEach(c => {
             let option = document.createElement('option');
-            option.value = c.CompanyId || c.companyNumber || c.companyNumber; // Adjust as needed
+            option.value = c.companyNumber || c.companyNumber; // Adjust as needed
             option.text = c.CompanyName || c.company_name;
             companySelect.appendChild(option);
         });
@@ -34,15 +34,38 @@
     </script>
 </head>
 <body>
+
     <form method="POST">
         <h1>Company & Contact Picker</h1>
         <label for="company">Company:</label>
-        <select id="company"></select>
-        
-        <br><br>
+        <select id="company" name="company">
+            {% for item in items %}
+                <option value="{{ item }}" {% if selected_item == item %}selected{% endif %}>{{ item }}</option>
+            {% endfor %}
+        </select>
+    
+        <button type="submit">Select Company</button>
+        <br>
 
         <label for="contact">Contact:</label>
-        <select id="contact"></select>
+        <select id="contact" name ="contact">
+            {% for item2 in items2 %}
+                <option value="{{ item2 }}" {% if selected_item == item2 %}selected{% endif %}>{{ item2 }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Select Contact</button>
+        <br>
+
     </form>
+
+    <h2>Your Selected Data:</h2>
+    {% if selected_item %}
+    <p>{{ selected_item }}</p>
+    {% endif %}
+    {% if selected_item2 %}
+    <p>{{ selected_item2 }}</p>
+    {% endif %}
+    
 </body>
 </html>
