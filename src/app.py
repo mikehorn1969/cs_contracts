@@ -1,24 +1,31 @@
 # app.py
 
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from c7query import getC7Companies, getC7Contacts, getC7Company, getC7Contact
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=["GET", "POST"])
 def index():
-    return render_template('index.html')
+    if request.method == "POST":
+        selected = request.form.get("company")
+        if selected:
+            session['selected_company'] = selected
+            return redirect(url_for("index"))
+    selected_item = session.get('selected_item')
+
+    return render_template('index.html',items=items, selected_item=selected_item)
 
 # API endpoint to get all companies (as JSON)
 @app.route('/api/companies')
 def api_companies():
-    companies = getC7Companies()   # Should return a list of dicts!
+    companies = getC7Companies()   
     return jsonify(companies)
 
 # API endpoint to get contacts for a company (if you want filtering)
 @app.route('/api/contacts')
 def api_contacts():
-    contacts = getC7Contacts()     # Should return a list of dicts!
+    contacts = getC7Contacts()     
     return jsonify(contacts)
 
 # API endpoint to get a single company by id

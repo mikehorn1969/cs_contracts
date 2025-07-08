@@ -3,25 +3,37 @@
 import json
 import requests
 import configparser
-from classes import Company, Contact
+from classes import Company, Contact, Config
 import re
 
 def loadConfig():
 
-    # Read config
-        config = configparser.ConfigParser()
-        files_read = config.read("colleague7.cfg")
-        
-        # Get subscription key from config
-        subscription_key = config.get('APIKEYS', 'SUBSCRIPTION_KEY1')    
-        user_id = config.get('APIKEYS', 'C7_USERID')
-        ch_key = config.get('APIKEYS', 'CH_KEY')
+    subscription_key = Config.find_by_name("C7 Key")
+    
+    if subscription_key is None:
+        try:
+            # Read from config file
+            config = configparser.ConfigParser()
+            files_read = config.read("colleague7.cfg")
+            
+            # Load subscription key from config
+            subscription_key = Config("C7 Key",config.get('APIKEYS', 'SUBSCRIPTION_KEY1'))
+            user_id = Config("C7 Userid",config.get('APIKEYS', 'C7_USERID'))
+            ch_key = Config("CH Key",config.get('APIKEYS', 'CH_KEY'))
 
-        return(subscription_key, user_id, ch_key)
+        except Exception as e:
+            print(e)
+            exit(0)
+
+    return("Config Loaded")
 
 def getC7Company(company_id):
+    
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
 
-    subscription_key, user_id, api_key = loadConfig()
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
 
     try:
 
@@ -56,7 +68,11 @@ def getC7Company(company_id):
 
 def getC7Contact(contact_id):
 
-    subscription_key, user_id, api_key = loadConfig()
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
 
     try:
 
@@ -97,7 +113,11 @@ def getC7Contact(contact_id):
 
 def getC7Contacts():
      
-    subscription_key, user_id, api_key = loadConfig()
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
 
     try:       
         url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
@@ -120,17 +140,26 @@ def getC7Contacts():
         }
 
         response = requests.post(url, headers=hdr , json=body)
-
-        # Read and decode response
         response_json = response.json()
 
-        # Extract desired fields
-        # companyname, name, address, emailaddress, phone, title    
         contacts = []
-        for ContactId, CompanyName, Forenames, Surname, AddressLine1, AddressLine2, Addressline3, City, Postcode, EmailAddress, TelephoneNumber, Title in response_json:
+        for item in response_json:
+            ContactId = item.get("ContactId", "")
+            CompanyName = item.get("CompanyName", "")
+            Forenames = item.get("Forenames", "")
+            Surname = item.get("Surname", "")
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            Addressline3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            Postcode = item.get("Postcode", "")
+            EmailAddress = item.get("EmailAddress", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+            Title = item.get("Title", "")
 
-            ContactName = f"{Forenames} {Surname}"
-            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
+            ContactName = (Forenames or "") + " " + (Surname  or "")
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+            
             ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
             new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
 
@@ -151,7 +180,11 @@ def getC7Contacts():
     
 def getC7Companies():
     
-    subscription_key, user_id, api_key = loadConfig()
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
 
     try:       
         url = f"https://coll7openapi.azure-api.net/api/Company/AdvancedSearch"
@@ -181,21 +214,102 @@ def getC7Companies():
         # Extract desired fields
         # companyname, name, address, emailaddress, phone, title    
         companies = []
-        for CompanyId, CompanyName, AddressLine1, AddressLine2, Addressline3, City, Postcode, companyEmail, TelephoneNumber, registrationNumber in response_json:
+        for item in response_json:
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            AddressLine3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            CompanyEmail = item.get("CompanyEmail", "")
+            CompanyId = item.get("CompanyId", "")
+            CompanyName = item.get("CompanyName", "")
+            Postcode = item.get("Postcode", "")
+            RegistrationNumber = item.get("RegistrationNumber", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+        
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
 
-            RawAddress = f"{AddressLine1}, {AddressLine2}, {Addressline3}, {City}, {Postcode}"
             CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
                 
             # create a new Company instance
-            new_contact = Company({CompanyName}, CompanyAddress, {companyEmail}, {TelephoneNumber}, {registrationNumber})
+            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
 
             companies.append({
                 "CompanyId": CompanyId,
                 "CompanyName": CompanyName,
                 "CompanyAddress": CompanyAddress,
-                "CompanyEmail": companyEmail,
+                "CompanyEmail": CompanyEmail,
                 "CompanyPhone": TelephoneNumber,
-                "CompanyNumber": registrationNumber
+                "CompanyNumber": RegistrationNumber
+            })
+
+        return companies
+
+    except Exception as e:
+        return e
+    
+
+def getC7Requirements():
+    
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
+
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Company/AdvancedSearch"
+
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        body ={
+            "userId": user_id,
+            "allColumns": False,
+            "columns": ["CompanyId", "CompanyName", "AddressLine1", "AddressLine2", "AddressLine3", 
+                        "City", "Postcode", "telephoneNumber", "companyEmail", "registrationNumber"],
+            "includeArchived": False,
+            "parameters": [{
+                "fieldName": "DateCreated",
+                "fieldValue": "1 Jan 2010" 
+            }]
+        }
+
+        response = requests.post(url, headers=hdr , json=body)
+
+        # Read and decode response
+        response_json = response.json()
+
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title    
+        companies = []
+        for item in response_json:
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            AddressLine3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            CompanyEmail = item.get("CompanyEmail", "")
+            CompanyId = item.get("CompanyId", "")
+            CompanyName = item.get("CompanyName", "")
+            Postcode = item.get("Postcode", "")
+            RegistrationNumber = item.get("RegistrationNumber", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+        
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+
+            CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+                
+            # create a new Company instance
+            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
+
+            companies.append({
+                "CompanyId": CompanyId,
+                "CompanyName": CompanyName,
+                "CompanyAddress": CompanyAddress,
+                "CompanyEmail": CompanyEmail,
+                "CompanyPhone": TelephoneNumber,
+                "CompanyNumber": RegistrationNumber
             })
 
         return companies
@@ -204,5 +318,145 @@ def getC7Companies():
         return e
 
 
+def getC7Candidates():
+    
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+        
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
+
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Company/AdvancedSearch"
+
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        body ={
+            "userId": user_id,
+            "allColumns": False,
+            "columns": ["CompanyId", "CompanyName", "AddressLine1", "AddressLine2", "AddressLine3", 
+                        "City", "Postcode", "telephoneNumber", "companyEmail", "registrationNumber"],
+            "includeArchived": False,
+            "parameters": [{
+                "fieldName": "DateCreated",
+                "fieldValue": "1 Jan 2010" 
+            }]
+        }
+
+        response = requests.post(url, headers=hdr , json=body)
+
+        # Read and decode response
+        response_json = response.json()
+
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title    
+        companies = []
+        for item in response_json:
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            AddressLine3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            CompanyEmail = item.get("CompanyEmail", "")
+            CompanyId = item.get("CompanyId", "")
+            CompanyName = item.get("CompanyName", "")
+            Postcode = item.get("Postcode", "")
+            RegistrationNumber = item.get("RegistrationNumber", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+        
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+
+            CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+                
+            # create a new Company instance
+            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
+
+            companies.append({
+                "CompanyId": CompanyId,
+                "CompanyName": CompanyName,
+                "CompanyAddress": CompanyAddress,
+                "CompanyEmail": CompanyEmail,
+                "CompanyPhone": TelephoneNumber,
+                "CompanyNumber": RegistrationNumber
+            })
+
+        return companies
+
+    except Exception as e:
+        return e
+
+
+def getContactsByCompany(CompanyName):
+
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
+
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
+
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+        body ={
+            "userId": user_id,
+            "allColumns": False,
+            "columns": ["ContactId", "CompanyName", "Forenames", "Surname", "AddressLine1", "AddressLine2", "AddressLine3", 
+                        "City", "Postcode", "EmailAddress", "TelephoneNumber", "Title"],
+            "includeArchived": False,
+            "parameters": [{
+                "fieldName": "CompanyName",
+                "fieldValue": CompanyName 
+            }]
+        }
+
+        response = requests.post(url, headers=hdr , json=body)
+        response_json = response.json()
+
+        contacts = []
+        for item in response_json:
+            ContactId = item.get("ContactId", "")
+            CompanyName = item.get("CompanyName", "")
+            Forenames = item.get("Forenames", "")
+            Surname = item.get("Surname", "")
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            Addressline3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            Postcode = item.get("Postcode", "")
+            EmailAddress = item.get("EmailAddress", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+            Title = item.get("Title", "")
+
+            ContactName = (Forenames or "") + " " + (Surname  or "")
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+            
+            ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
+            new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+
+            contacts.append({
+                "ContactId": ContactId,
+                "CompanyName": CompanyName,
+                "ContactName": ContactName,
+                "ContactAddress": ContactAddress,
+                "ContactEmail": EmailAddress,
+                "ContactPhone": TelephoneNumber,
+                "ContactTitle": Title
+            })
+
+        return contacts
+
+    except Exception as e:
+        return e
+
+
 if __name__ == '__main__':
-    getC7Companies()    
+    loadConfig()    
+    for search_config in Config._instances:
+        print(f"{search_config.key}, {search_config.value}")
