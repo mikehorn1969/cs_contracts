@@ -156,6 +156,19 @@ def getC7Contacts():
             EmailAddress = item.get("EmailAddress", "")
             TelephoneNumber = item.get("TelephoneNumber", "")
             Title = item.get("Title", "")
+        for item in response_json:
+            ContactId = item.get("ContactId", "")
+            CompanyName = item.get("CompanyName", "")
+            Forenames = item.get("Forenames", "")
+            Surname = item.get("Surname", "")
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            Addressline3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            Postcode = item.get("Postcode", "")
+            EmailAddress = item.get("EmailAddress", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+            Title = item.get("Title", "")
 
             ContactName = (Forenames or "") + " " + (Surname  or "")
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
@@ -228,9 +241,24 @@ def getC7Companies():
         
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
 
+        for item in response_json:
+            AddressLine1 = item.get("AddressLine1", "")
+            AddressLine2 = item.get("AddressLine2", "")
+            AddressLine3 = item.get("AddressLine3", "")
+            City = item.get("City", "")
+            CompanyEmail = item.get("CompanyEmail", "")
+            CompanyId = item.get("CompanyId", "")
+            CompanyName = item.get("CompanyName", "")
+            Postcode = item.get("Postcode", "")
+            RegistrationNumber = item.get("RegistrationNumber", "")
+            TelephoneNumber = item.get("TelephoneNumber", "")
+        
+            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
+
             CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
                 
             # create a new Company instance
+            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
             new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
 
             companies.append({
@@ -238,7 +266,9 @@ def getC7Companies():
                 "CompanyName": CompanyName,
                 "CompanyAddress": CompanyAddress,
                 "CompanyEmail": CompanyEmail,
+                "CompanyEmail": CompanyEmail,
                 "CompanyPhone": TelephoneNumber,
+                "CompanyNumber": RegistrationNumber
                 "CompanyNumber": RegistrationNumber
             })
 
