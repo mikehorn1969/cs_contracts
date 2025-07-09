@@ -2,6 +2,7 @@
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from c7query import getC7Companies, getContactsByCompany, getC7Contacts
+from classes import Company, Contact, Requirement
 import secrets
 
 app = Flask(__name__)
@@ -24,16 +25,23 @@ def index():
     for contact in contacts:
         contact_names.append(contact.get("ContactName")) """
 
+    #company_names = Company.get_all_companies()
+    company_names = []
+    contact_names = [] 
+    selected_contact = ""
+
     if request.method == "POST":
-        selected = request.form.get("company")
-        if selected:
-            session['selected_company'] = selected
-            
-        selected = request.form.get("contact")
-        if selected:
-            session['selected_contact'] = selected
-    selected_company = session.get('selected_company')
-    selected_contact = session.get('selected_contact')
+        if 'btCompany' in request.form:
+            selected = request.form.get("company")
+            if selected:
+                session['selected_company'] = selected
+                selected_company = session.get('selected_company')
+
+        elif 'btContact' in request.form:
+            selected = request.form.get("contact")
+            if selected:
+                session['selected_contact'] = selected
+                selected_contact = session.get('selected_contact')
 
     return render_template('index.html',items=company_names, selected_item=selected_company, items2=contact_names, selected_item2=selected_contact)
 
