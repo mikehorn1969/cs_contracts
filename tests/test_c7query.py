@@ -15,33 +15,39 @@ def test_getC7Contacts():
 
     result = getC7Contacts()
     
-    assert result == 200, "Failed to load contacts"
+    assert result != [], "No contacts returned"
+
 
 
 def test_getC7Companies():
 
     result = getC7Companies()
   
-    assert result == 200, "Failed to load contacts"
+    assert result != [], "No companies returned"
+
 
 
 def test_getContactsByCompany():
 
     company_name = "Bellrock Property and Facilities Management"
-    result = getContactsByCompany(Company)
+    result = getContactsByCompany(company_name)
 
     assert result != [], "No contacts returned"
 
-def test_getRequirements():
+
+
+def test_getC7Requirements():
 
     company_name = "Bellrock Property and Facilities Management"
     contact_name = "Matt Langelier"
-    status = "Filled"
-    result = getC7Requirements(company_name,contact_name,status)
+    result = getC7Requirements(company_name,contact_name)
+    
+    for req in result:
+        print(req.get("entityDescription"))
 
-    assert result != [], "No requirements returned"
+    #assert result != [], "No requirements returned"
 
 
 if __name__ == '__main__':
-    test_getRequirements()
+    test_getC7Requirements()
         

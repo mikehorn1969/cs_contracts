@@ -98,10 +98,11 @@ class Requirement:
     counter = 0
     _instances = []
 
-    def __init__(self, companyname, contactname, description ):        
+    def __init__(self, companyname, contactname, description, jobtitle ):        
         self.companyname = companyname
         self.contactname = contactname
         self.description = description
+        self.jobtitle = jobtitle
         
         Requirement.counter += 1 # increment the company counter
         Requirement._instances.append(self)

@@ -1,7 +1,7 @@
 # app.py
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
-from c7query import getC7Companies, getContactsByCompany, getC7Contacts
+from c7query import getC7Companies, getContactsByCompany, getC7Requirements
 from classes import Company, Contact, Requirement
 import secrets
 
@@ -11,39 +11,52 @@ app.secret_key = secrets.token_hex(32)
 @app.route('/', methods=["GET", "POST"])
 def index():
     
-    """ companies = getC7Companies()
-    company_names = []
-    for company in companies:
-        company_names.append(company.get("CompanyName"))
+    companies = getC7Companies()
+    company_names = [company["CompanyName"] for company in companies]
 
-    contact_names = []
-    if session.get("selected_company") is None:    
-        contacts = getC7Contacts()
-    else:
-        contacts = getContactsByCompany(session.get("selected_company"))
-
-    for contact in contacts:
-        contact_names.append(contact.get("ContactName")) """
-
-    #company_names = Company.get_all_companies()
-    company_names = []
     contact_names = [] 
-    selected_contact = ""
+    req_names = []
+
+    selected_company = session.get('selected_company', '')
+    selected_contact = session.get('selected_contact', '')
+    selected_requirement = session.get('selected_requirement')
 
     if request.method == "POST":
         if 'btCompany' in request.form:
-            selected = request.form.get("company")
-            if selected:
-                session['selected_company'] = selected
-                selected_company = session.get('selected_company')
+            selected_company = request.form.get("company")
+            session['selected_company'] = selected_company
+            session['selected_contact'] = ''
+            return redirect(url_for('index'))
 
-        elif 'btContact' in request.form:
-            selected = request.form.get("contact")
-            if selected:
-                session['selected_contact'] = selected
-                selected_contact = session.get('selected_contact')
+        if 'btContact' in request.form:
+            selected_contact = request.form.get('contact')
+            session['selected_contact'] = selected_contact
+            return redirect(url_for('index'))
+        
+        if 'btRequirement' in request.form:
+            selected_requirement = request.form.get('requirement')
+            session['selected_requirement'] = selected_requirement
+            return redirect(url_for('index'))
 
-    return render_template('index.html',items=company_names, selected_item=selected_company, items2=contact_names, selected_item2=selected_contact)
+    # Only show contacts if a company is selected
+    if selected_company:
+        contacts = getContactsByCompany(selected_company)
+        contact_names = [contact.get("ContactName") for contact in contacts]
+
+    if selected_requirement:
+        requirements = getC7Requirements(selected_company, selected_contact)
+        req_names = [requirement.get("ContactName") for requirement in requirements]
+
+    return render_template(
+        'index.html',
+        company_names=company_names,
+        selected_company=selected_company,
+        contact_names=contact_names,
+        selected_contact=selected_contact,
+        requirements=req_names,
+        selected_requirement=selected_requirement
+    )
+
 
 # API endpoint to get all companies (as JSON)
 @app.route('/api/companies')
@@ -52,11 +65,18 @@ def api_companies():
     return jsonify(companies)
 
 
-# API endpoint to get contacts for a company (if you want filtering)
+# API endpoint to get contacts for a company
 @app.route('/api/contacts')
 def api_contacts():
     contacts = getContactsByCompany(session.get('selected_company'))     
     return jsonify(contacts)
+
+
+# API endpoint to get requirements for a company/contact
+@app.route('/api/requirements')
+def api_requirements():
+    requirements = getC7Requirements(session.get('selected_company'),session.get('selected_contact'))     
+    return jsonify(requirements)
 
 
 if __name__ == '__main__':

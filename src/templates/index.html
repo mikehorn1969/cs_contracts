@@ -29,60 +29,61 @@
         });
     }
 
+    async function loadRequirements() {
+        let response = await fetch('/api/requirements');
+        let reqs = await response.json();
+        let reqSelect = document.getElementById('requirement');
+        requirements.forEach(c => {
+            let option = document.createElement('option');
+            option.value = c.requirementId || c.entityDescription;
+            option.text = c.jobTitle || c.entityDescription;
+            reqSelect.appendChild(option);
+        });
+    }
+
     window.onload = function() {
         loadCompanies();
         loadContacts();
+        loadRequirements();
     };
     </script>
 </head>
 <body>
-    <h1>Change Specialists Contract Creator</h1>
-    <div class="row">
-        <div class="column">
-            <h2>Client details</h2>
-            <form method="POST" name="CompanyForm">
-                <label for="company">Company:</label>
-                <select id="company" name="company">
-                    {% for item in items %}                        
-                        <option value="{{ item }}" {% if selected_item == item %}selected{% endif %}>{{ item }}</option>
-                    {% endfor %}
-                </select>
-    
-        <button type="submit" name="btCompany">Select Company</button>
-        <br>
-    </form>
-        </div>
-        <div class="column">
-            <h2>Service Standards</h2>
-            <table name="tbStandards">
-        
-            </table>
-        </div>
-    </div>
-
-    
-
-    {% if selected_item %}
-    <form method="POST" name="ContactForm"></form>
-        <label for="contact">Contact:</label>
-        <select id="contact" name ="contact">
-            {% for item2 in items2 %}
-                <option value="{{ item2 }}" {% if selected_item == item2 %}selected{% endif %}>{{ item2 }}</option>
+    <h2>Select Company</h2>
+    <form method="POST">
+        <select name="company">
+            <option value="">-- Select Company --</option>
+            {% for name in company_names %}
+                <option value="{{ name }}" {% if name == selected_company %}selected{% endif %}>{{ name }}</option>
             {% endfor %}
         </select>
-
-        <button type="submit" name="btContact">Select Contact</button>
-        <br>
-
+        <button type="submit" name="btCompany">Next</button>
     </form>
+
+    {% if selected_company %}
+        <h2>Select Contact for {{ selected_company }}</h2>
+        <form method="POST">
+            <select name="contact">
+                <option value="">-- Select Contact --</option>
+                {% for name in contact_names %}
+                    <option value="{{ name }}" {% if name == selected_contact %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="btContact">Next</button>
+        </form>
     {% endif %}
-    
-    {% if selected_item %}
-    <p>{{ selected_item }}</p>
+
+    {% if selected_contact %}
+        <h2>Select Requirement for {{ selected_contact }} at {{selected_company }}</h2>
+        <form method="POST">
+            <select name="requirement">
+                <option value="">-- Select Requirement --</option>
+                {% for name in requirements %}
+                    <option value="{{ name }}" {% if name == selected_requirement %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="btRequirement">Next</button>
+        </form>
     {% endif %}
-    {% if selected_item2 %}
-    <p>{{ selected_item2 }}</p>
-    {% endif %}
-    
 </body>
 </html>
