@@ -1,52 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/style.css') }}">
-
+    <link rel="stylesheet" type= "text/css" href="{{ url_for('static',filename='styles/style.css') }}"/>
     <title>Change Specialists - Contract Management</title>
-    <script>
-    async function loadCompanies() {
-        let response = await fetch('/api/companies');
-        let companies = await response.json();
-        let companySelect = document.getElementById('company');
-        companies.forEach(c => {
-            let option = document.createElement('option');
-            option.value = c.CompanyId; 
-            option.text = c.CompanyName;
-            companySelect.appendChild(option);
-        });
-    }
-
-    async function loadContacts() {
-        let response = await fetch('/api/contacts');
-        let contacts = await response.json();
-        let contactSelect = document.getElementById('contact');
-        contacts.forEach(c => {
-            let option = document.createElement('option');
-            option.value = c.ContactId;
-            option.text = c.ContactName;
-            contactSelect.appendChild(option);
-        });
-    }
-
-    async function loadRequirements() {
-        let response = await fetch('/api/requirements');
-        let reqs = await response.json();
-        let reqSelect = document.getElementById('requirement');
-        requirements.forEach(c => {
-            let option = document.createElement('option');
-            option.value = c.RequirementId;
-            option.text = c.Description;
-            reqSelect.appendChild(option);
-        });
-    }
-
-    window.onload = function() {
-        loadCompanies();
-        //loadContacts();
-        //loadRequirements();
-    };
-    </script>
 </head>
 <body>
     <h2>Select Company</h2>
@@ -85,5 +41,19 @@
             <button type="submit" name="btRequirement">Next</button>
         </form>
     {% endif %}
+
+    {% if selected_requirement %}
+        <h2>Select Candidate for {{ selected_requirement }}</h2>
+        <form method="POST">
+            <select name="candidate">
+                <option value="">-- Select Candidate --</option>
+                {% for name in candidate_names %}
+                    <option value="{{ name }}" {% if name == selected_candidate %}selected{% endif %}>{{ name }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" name="btCandidate">Next</button>
+        </form>
+    {% endif %}
+
 </body>
 </html>

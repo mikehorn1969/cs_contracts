@@ -1,7 +1,7 @@
 # test_c7query.py
 
 import json
-from c7query import loadConfig, getC7Contacts, getC7Companies, getContactsByCompany, getC7Requirements
+from c7query import loadConfig, getC7Contacts, getC7Companies, getContactsByCompany, getC7RequirementCandidates
 from classes import Company
 
 def test_loadConfig():
@@ -36,18 +36,14 @@ def test_getContactsByCompany():
 
 
 
-def test_getC7Requirements():
+def test_getC7RequirementCandidates():
 
-    company_name = "Bellrock Property and Facilities Management"
-    contact_name = "Matt Langelier"
-    result = getC7Requirements(company_name,contact_name)
+    requirementId = 260
+    result = getC7RequirementCandidates(requirementId)
     
-    for req in result:
-        print(f"{req.get('RequirementId')} {req.get('Description')}")
-
-    #assert result != [], "No requirements returned"
+    assert result != [], "No candidates returned"
 
 
 if __name__ == '__main__':
-    test_getC7Requirements()
+    test_getC7RequirementCandidates()
         

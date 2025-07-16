@@ -134,3 +134,32 @@ class Requirement:
             return None    
         else:
             return requirements
+        
+
+class Candidate:
+
+    counter = 0
+    _instances = []
+
+    def __init__(self, candidatetid, candidatename):        
+        self.candidateId = candidatetid
+        self.candidateName = candidatename
+        
+        Candidate.counter += 1 # increment the company counter
+        Candidate._instances.append(self)
+
+    @classmethod
+    def count(cls):
+        print(f"Candidate count: {cls.counter}")
+
+    @classmethod
+    def get_all_candidates(cls):
+        return cls._instances
+    
+    @classmethod
+    def find_by_name(cls, search_name):
+        for search_candidate in cls._instances:
+            if search_candidate.name == search_name:
+                return search_candidate
+        return None    
+    

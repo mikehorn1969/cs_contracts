@@ -2,30 +2,11 @@
 
 import json
 import requests
-import configparser
-from classes import Company, Contact, Config, Requirement
+from classes import Company, Contact, Config, Requirement, Candidate
+from helper import loadConfig
 import re
 
-def loadConfig():
 
-    subscription_key = Config.find_by_name("C7 Key")
-    
-    if subscription_key is None:
-        try:
-            # Read from config file
-            config = configparser.ConfigParser()
-            files_read = config.read("colleague7.cfg")
-            
-            # Load subscription key from config
-            subscription_key = Config("C7 Key",config.get('APIKEYS', 'SUBSCRIPTION_KEY1'))
-            user_id = Config("C7 Userid",config.get('APIKEYS', 'C7_USERID'))
-            ch_key = Config("CH Key",config.get('APIKEYS', 'CH_KEY'))
-
-        except Exception as e:
-            print(e)
-            exit(0)
-
-    return("Config Loaded")
 
 def getC7Company(company_id):
     
@@ -122,8 +103,8 @@ def getC7Contacts():
     try:       
         url = f"https://coll7openapi.azure-api.net/api/Contact/AdvancedSearch"
 
-        hdr ={
         # Request headers
+        hdr ={
         'Cache-Control': 'no-cache',
         'Ocp-Apim-Subscription-Key': subscription_key,
         }
@@ -178,6 +159,7 @@ def getC7Contacts():
     except Exception as e:
         return e
     
+
 def getC7Companies():
     
     if Config.find_by_name("C7 Key") is None:
@@ -247,76 +229,6 @@ def getC7Companies():
     except Exception as e:
         return e
     
-
-def getC7Candidates():
-    
-    if Config.find_by_name("C7 Key") is None:
-        loadConfig()
-        
-    subscription_key = Config.find_by_name("C7 Key")
-    user_id = Config.find_by_name("C7 Userid")
-
-    try:       
-        url = f"https://coll7openapi.azure-api.net/api/Company/AdvancedSearch"
-
-        hdr ={
-        # Request headers
-        'Cache-Control': 'no-cache',
-        'Ocp-Apim-Subscription-Key': subscription_key,
-        }
-        body ={
-            "userId": user_id,
-            "allColumns": False,
-            "columns": ["CompanyId", "CompanyName", "AddressLine1", "AddressLine2", "AddressLine3", 
-                        "City", "Postcode", "telephoneNumber", "companyEmail", "registrationNumber"],
-            "includeArchived": False,
-            "parameters": [{
-                "fieldName": "DateCreated",
-                "fieldValue": "1 Jan 2010" 
-            }]
-        }
-
-        response = requests.post(url, headers=hdr , json=body)
-
-        # Read and decode response
-        response_json = response.json()
-
-        # Extract desired fields
-        # companyname, name, address, emailaddress, phone, title    
-        companies = []
-        for item in response_json:
-            AddressLine1 = item.get("AddressLine1", "")
-            AddressLine2 = item.get("AddressLine2", "")
-            AddressLine3 = item.get("AddressLine3", "")
-            City = item.get("City", "")
-            CompanyEmail = item.get("CompanyEmail", "")
-            CompanyId = item.get("CompanyId", "")
-            CompanyName = item.get("CompanyName", "")
-            Postcode = item.get("Postcode", "")
-            RegistrationNumber = item.get("RegistrationNumber", "")
-            TelephoneNumber = item.get("TelephoneNumber", "")
-        
-            RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (AddressLine3 or "") + ", " + (City or "") + ", " + (Postcode or "")
-
-            CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
-                
-            # create a new Company instance
-            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
-
-            companies.append({
-                "CompanyId": CompanyId,
-                "CompanyName": CompanyName,
-                "CompanyAddress": CompanyAddress,
-                "CompanyEmail": CompanyEmail,
-                "CompanyPhone": TelephoneNumber,
-                "CompanyNumber": RegistrationNumber
-            })
-
-        return companies
-
-    except Exception as e:
-        return e
-
 
 def getContactsByCompany(CompanyName):
 
@@ -421,11 +333,13 @@ def getC7Requirements(company_name,contact_name):
 
             new_requirement = Requirement(RequirementId, CompanyName, ContactName, Description, JobTitle)
 
+            displayDesc = f"{RequirementId} - {Description}"
+
             requirements.append({
                 "RequirementId": RequirementId,
                 "CompanyName": CompanyName,
                 "ContactName": ContactName,
-                "Description": Description,
+                "Description": displayDesc,
                 "JobTitle": JobTitle
             })
 
@@ -435,11 +349,54 @@ def getC7Requirements(company_name,contact_name):
         return e
 
 
+def getC7RequirementCandidates(requirementId):
+    
+    if Config.find_by_name("C7 Key") is None:
+        loadConfig()
+        
+    subscription_key = Config.find_by_name("C7 Key")
+    user_id = Config.find_by_name("C7 Userid")
+
+    try:       
+        url = f"https://coll7openapi.azure-api.net/api/Requirement/GetRequirementCandidates?UserId={user_id}&RequirementId={requirementId}"
+
+        hdr ={
+        # Request headers
+        'Cache-Control': 'no-cache',
+        'Ocp-Apim-Subscription-Key': subscription_key,
+        }
+ 
+        response = requests.get(url, headers=hdr)
+
+        # Read and decode response
+        response_json = response.json()
+
+        # Extract desired fields
+        # companyname, name, address, emailaddress, phone, title    
+        candidates = []
+        for item in response_json:
+            CandidateId = item.get("CandidateId", "")
+            Name = item.get("Name", "")
+                
+            # create a new Company instance
+            new_candidate = Candidate({CandidateId}, {Name} )
+
+            candidates.append({
+                "CandidateId": CandidateId,
+                "Name": Name
+            })
+
+        return candidates
+
+    except Exception as e:
+        return e
+
+
 if __name__ == '__main__':
     
-    company_name = "Bellrock Property and Facilities Management"
-    contact_name = "Matt Langelier"
-    result = getC7Requirements(company_name,contact_name)
+    requirement_id = 260
+
+    result = getC7RequirementCandidates(requirement_id)
     
     for reqfile in result:
-        print(reqfile.get("Description"))
+        print(f"{reqfile.get('Name')} {reqfile.get('CandidateId')}")
