@@ -31,6 +31,7 @@ def index():
         if 'btContact' in request.form:
             selected_contact = request.form.get('contact')
             session['selected_contact'] = selected_contact
+            session['selected_requirement'] = ''
             return redirect(url_for('index'))
         
         if 'btRequirement' in request.form:
@@ -43,9 +44,10 @@ def index():
         contacts = getContactsByCompany(selected_company)
         contact_names = [contact.get("ContactName") for contact in contacts]
 
-    if selected_requirement:
+    # Only show requirements once a contact has been selected
+    if selected_contact:
         requirements = getC7Requirements(selected_company, selected_contact)
-        req_names = [requirement.get("ContactName") for requirement in requirements]
+        req_names = [requirement.get("Description") for requirement in requirements]
 
     return render_template(
         'index.html',

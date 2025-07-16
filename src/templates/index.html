@@ -11,8 +11,8 @@
         let companySelect = document.getElementById('company');
         companies.forEach(c => {
             let option = document.createElement('option');
-            option.value = c.companyNumber || c.companyNumber; // Adjust as needed
-            option.text = c.CompanyName || c.company_name;
+            option.value = c.CompanyId; 
+            option.text = c.CompanyName;
             companySelect.appendChild(option);
         });
     }
@@ -23,8 +23,8 @@
         let contactSelect = document.getElementById('contact');
         contacts.forEach(c => {
             let option = document.createElement('option');
-            option.value = c.ContactId || c.name;
-            option.text = c.ContactName || c.name;
+            option.value = c.ContactId;
+            option.text = c.ContactName;
             contactSelect.appendChild(option);
         });
     }
@@ -35,16 +35,16 @@
         let reqSelect = document.getElementById('requirement');
         requirements.forEach(c => {
             let option = document.createElement('option');
-            option.value = c.requirementId || c.entityDescription;
-            option.text = c.jobTitle || c.entityDescription;
+            option.value = c.RequirementId;
+            option.text = c.Description;
             reqSelect.appendChild(option);
         });
     }
 
     window.onload = function() {
         loadCompanies();
-        loadContacts();
-        loadRequirements();
+        //loadContacts();
+        //loadRequirements();
     };
     </script>
 </head>

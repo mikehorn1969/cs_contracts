@@ -43,7 +43,7 @@ def test_getC7Requirements():
     result = getC7Requirements(company_name,contact_name)
     
     for req in result:
-        print(req.get("entityDescription"))
+        print(f"{req.get('RequirementId')} {req.get('Description')}")
 
     #assert result != [], "No requirements returned"
 

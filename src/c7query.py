@@ -410,17 +410,19 @@ def getC7Requirements(company_name,contact_name):
         for item in response_json:
 
             # ignore dead requirements
-            if item.get("statusCode") == notStatus:
+            if item.get("statusCode") in notStatus:
                 continue
 
+            RequirementId = item.get("requirementId", "")
             CompanyName = item.get("companyName", "")
             ContactName = item.get("contactName", "")
             Description = item.get("entityDescription", "")
             JobTitle = item.get("jobTitle", "")
 
-            new_requirement = Requirement(CompanyName, ContactName, Description, JobTitle)
+            new_requirement = Requirement(RequirementId, CompanyName, ContactName, Description, JobTitle)
 
             requirements.append({
+                "RequirementId": RequirementId,
                 "CompanyName": CompanyName,
                 "ContactName": ContactName,
                 "Description": Description,

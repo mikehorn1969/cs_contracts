@@ -98,7 +98,8 @@ class Requirement:
     counter = 0
     _instances = []
 
-    def __init__(self, companyname, contactname, description, jobtitle ):        
+    def __init__(self, requirementid, companyname, contactname, description, jobtitle ):        
+        self.requirementId = requirementid
         self.companyname = companyname
         self.contactname = contactname
         self.description = description
