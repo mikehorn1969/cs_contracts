@@ -24,8 +24,8 @@ class Company:
     counter = 0
     _instances = []
 
-    def __init__(self, companyname, address, email, phone, companyNumber  ):
-        self.company_name = companyname
+    def __init__(self, companyname, address, email, phone, companyNumber):
+        self.companyname = companyname
         self.address = address
         self.emailaddress = email
         self.phone = phone
@@ -39,9 +39,12 @@ class Company:
 
     
     @classmethod
-    def find_by_name(cls, search_name):
+    def find_by(cls, field, value):
         for search_company in cls._instances:
-            if search_company.name == search_name:
+            attr = getattr(search_company,field, None)
+            if isinstance(attr, set) and len(attr) == 1:
+                attr = next(iter(attr))
+            if attr == value:
                 return search_company
         return None
     
@@ -55,7 +58,7 @@ class Contact:
     _instances = []
 
     def __init__(self, companyname, name, address, emailaddress, phone, title  ):        
-        self.company_name = companyname
+        self.companyname = companyname
         self.name = name
         self.address = address
         self.emailaddress = emailaddress
@@ -92,6 +95,15 @@ class Contact:
         else:
             return contacts
 
+    @classmethod
+    def find_by(cls, field, value):
+        for search_contact in cls._instances:
+            attr = getattr(search_contact,field, None)
+            """ if isinstance(attr, set) and len(attr) == 1:
+                attr = next(iter(attr)) """
+            if attr == value:
+                return search_contact
+        return None
 
 class Requirement:
 
@@ -135,6 +147,12 @@ class Requirement:
         else:
             return requirements
         
+    @classmethod
+    def find_by(cls, field, value):
+        for search_requirement in cls._instances:            
+            if getattr(search_requirement,field, None) == value:
+                return search_requirement
+        return None
 
 class Candidate:
 
@@ -144,6 +162,7 @@ class Candidate:
     def __init__(self, candidatetid, candidatename):        
         self.candidateId = candidatetid
         self.candidateName = candidatename
+        self.companyNumber = ''
         
         Candidate.counter += 1 # increment the company counter
         Candidate._instances.append(self)
@@ -162,4 +181,11 @@ class Candidate:
             if search_candidate.name == search_name:
                 return search_candidate
         return None    
+    
+    @classmethod
+    def find_by(cls, field, value):
+        for search_candidate in cls._instances:            
+            if getattr(search_candidate,field, None) == value:
+                return search_candidate
+        return None
     

@@ -1,11 +1,9 @@
 # c7query.py - Colleague 7 API queries
 
-import json
 import requests
 from classes import Company, Contact, Config, Requirement, Candidate
 from helper import loadConfig
 import re
-
 
 
 def getC7Company(company_id):
@@ -160,7 +158,7 @@ def getC7Contacts():
         return e
     
 
-def getC7Companies():
+def getC7Clients():
     
     if Config.find_by_name("C7 Key") is None:
         loadConfig()
@@ -218,8 +216,7 @@ def getC7Companies():
                 "CompanyId": CompanyId,
                 "CompanyName": CompanyName,
                 "CompanyAddress": CompanyAddress,
-                "CompanyEmail": CompanyEmail,
-                "CompanyEmail": CompanyEmail,
+                "CompanyEmail": CompanyEmail,                
                 "CompanyPhone": TelephoneNumber,
                 "CompanyNumber": RegistrationNumber
             })

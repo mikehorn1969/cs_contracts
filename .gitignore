@@ -6,3 +6,4 @@ colleague7.cfg
 launch.json
 **/__pycache__
 .pytest_cache
+sandbox

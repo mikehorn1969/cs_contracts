@@ -4,7 +4,7 @@ from helper import loadConfig
 
 def getCHRecord(companyNo):
 
-    if Config.find_by_name("C7 Key") is None:
+    if Config.find_by_name("CH Key") is None:
         loadConfig()
         
     subscription_key = Config.find_by_name("CH Key")
