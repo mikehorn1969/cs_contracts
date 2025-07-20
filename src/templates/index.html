@@ -110,13 +110,13 @@
 
         <table border="1" cellpadding="4" name="candidatedata">
                 <tr>
-                    {% for field in req_fields %}
+                    {% for field in candidate_fields %}
                         <th>{{ field }}</th>
                     {% endfor %}
                 </tr>
                 <tr>
-                    {% for field in req_fields %}
-                        <td>{{ req_record[field] }}</td>
+                    {% for field in candidate_fields %}
+                        <td>{{ candidate_record[field] }}</td>
                     {% endfor %}
                 </tr>
             </table>    

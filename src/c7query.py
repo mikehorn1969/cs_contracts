@@ -140,7 +140,7 @@ def getC7Contacts():
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
             
             ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
-            new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+            new_contact = Contact(CompanyName, ContactName, ContactAddress, EmailAddress, TelephoneNumber, Title)
 
             contacts.append({
                 "ContactId": ContactId,
@@ -210,7 +210,7 @@ def getC7Clients():
             CompanyAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
                 
             # create a new Company instance
-            new_contact = Company({CompanyName}, CompanyAddress, {CompanyEmail}, {TelephoneNumber}, {RegistrationNumber})
+            new_contact = Company(CompanyName, CompanyAddress, CompanyEmail, TelephoneNumber, RegistrationNumber)
 
             companies.append({
                 "CompanyId": CompanyId,
@@ -277,7 +277,7 @@ def getContactsByCompany(CompanyName):
             RawAddress = (AddressLine1 or "") + ", " + (AddressLine2 or "") + ", " + (Addressline3 or "") + ", " + (City or "") + ", " + (Postcode or "")
             
             ContactAddress = re.sub(r',+', ',', RawAddress)    # strip extra commas where an address field was empty
-            new_contact = Contact({CompanyName}, ContactName, ContactAddress, {EmailAddress}, {TelephoneNumber}, {Title})
+            new_contact = Contact(CompanyName, ContactName, ContactAddress, EmailAddress, TelephoneNumber, Title)
 
             contacts.append({
                 "ContactId": ContactId,
@@ -369,14 +369,14 @@ def getC7RequirementCandidates(requirementId):
         response_json = response.json()
 
         # Extract desired fields
-        # companyname, name, address, emailaddress, phone, title    
         candidates = []
         for item in response_json:
             CandidateId = item.get("CandidateId", "")
-            Name = item.get("Name", "")
-                
+            Name = str(item.get("Name", ""))
+            Name = Name.split(":")[0]
+            
             # create a new Company instance
-            new_candidate = Candidate({CandidateId}, {Name} )
+            new_candidate = Candidate(CandidateId, Name)
 
             candidates.append({
                 "CandidateId": CandidateId,

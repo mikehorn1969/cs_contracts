@@ -1,7 +1,7 @@
 # test_c7query.py
 
-import json
-from c7query import loadConfig, getC7Contacts, getC7Companies, getContactsByCompany, getC7RequirementCandidates
+import json, pytest
+from c7query import loadConfig, getC7Contacts, getC7Clients, getContactsByCompany, getC7RequirementCandidates
 from classes import Company
 
 def test_loadConfig():
@@ -19,9 +19,9 @@ def test_getC7Contacts():
 
 
 
-def test_getC7Companies():
+def test_getC7Clients():
 
-    result = getC7Companies()
+    result = getC7Clients()
   
     assert result != [], "No companies returned"
 

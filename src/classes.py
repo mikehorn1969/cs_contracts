@@ -184,8 +184,12 @@ class Candidate:
     
     @classmethod
     def find_by(cls, field, value):
-        for search_candidate in cls._instances:            
-            if getattr(search_candidate,field, None) == value:
+        for search_candidate in cls._instances:
+
+            c_attr = getattr(search_candidate,field, None)
+            c_attr = str(c_attr).strip("{}").strip('"').strip("'")
+            
+            if c_attr == value:
                 return search_candidate
         return None
     

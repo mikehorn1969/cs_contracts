@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify, session, redirect, u
 from c7query import getC7Clients, getContactsByCompany, getC7Requirements, getC7RequirementCandidates
 from chquery import getCHRecord
 import secrets
-from classes import Company, Contact, Requirement
+from classes import Company, Contact, Requirement, Candidate
 
 app = Flask(__name__)
 app.secret_key = secrets.token_hex(32)
@@ -28,7 +28,7 @@ def index():
     req_record = []
 
     candidate_names = []
-    candidate_fields = []
+    candidate_fields = ['candidateId', 'candidateName', 'companyNumber']
     candidate_record = []
 
     ch_record = None
@@ -100,7 +100,7 @@ def index():
 
     # Only show candidates once a requirement has been selected
     if selected_requirement:
-        id_part, name_part = selected_requirement.split(" - ",1)
+        id_part = selected_requirement.split(" - ",1)[0]
         candidates = getC7RequirementCandidates(id_part)
         candidate_names = [candidate.get("Name") for candidate in candidates]
 
@@ -113,6 +113,16 @@ def index():
         except Exception as e:
             error = str(e)
 
+
+    # Only show candidates once a requirement has been selected
+    if selected_candidate:
+        candidate_name = selected_candidate
+
+        try:
+            result = Candidate.find_by("candidateName", candidate_name)            
+            candidate_record = {k: result.__getattribute__(k) for k in candidate_fields}
+        except Exception as e:
+            error = str(e)
 
 
     return render_template(
