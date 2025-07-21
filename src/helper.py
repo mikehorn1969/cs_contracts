@@ -21,4 +21,25 @@ def loadConfig():
             print(e)
             exit(0)
 
-    return("Config Loaded")
+    return("C7 Config Loaded")
+
+def loadAzureKeys():
+    
+    subscription_key = Config.find_by_name("AZURE_CLIENT_ID")
+    
+    if subscription_key is None:
+        try:
+            # Read from config file
+            config = configparser.ConfigParser()
+            files_read = config.read("colleague7.cfg")
+            
+            # Load subscription key from config
+            AZURE_CLIENT_ID = Config("AZURE_CLIENT_ID",config.get('AZUREKEYS', 'AZURE_CLIENT_ID'))
+            AZURE_TENANT_ID = Config("AZURE_TENANT_ID",config.get('AZUREKEYS', 'AZURE_TENANT_ID'))
+            AZURE_CLIENT_SECRET = Config("AZURE_CLIENT_SECRET",config.get('AZUREKEYS', 'AZURE_CLIENT_SECRET'))
+
+        except Exception as e:
+            print(e)
+            exit(0)
+
+    return("Azure Config Loaded")
